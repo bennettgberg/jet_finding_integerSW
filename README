@@ -1,0 +1,17 @@
+2-Layer Jet-finding algorithm for Phase II Upgrade of CMS detector (for HL-LHC)
+Software Emulation
+Authors: Bennett Greenberg, Felipe Paucar-Velasquez, Yuri Gershtein 
+ (HEX lab at Rutgers, the State University of New Jersey-Revolutionary for 250 years)
+
+To create binary file for running emulation, run "make".
+For binary that will compare simulation and emulation results, run "make compare".
+Before running the software, you must generate the input files by running "python coe_to_hex.py"
+  This should create 27 files named phi(#).dat, one for each phi bin.
+	This python script requires vcu118_input_patterns.coe as the input file.
+
+To compare simulation and emulation results:
+0. Run simulation in Vivado.
+1. Run emulation by executing "./jet_find" (make sure all 27 input files exist in this directory)
+2. Copy the simulation results to this directory (sim_outL2.txt).
+3. Execute "./compare" (run "make compare" first if the "compare" binary doesn't already exist)
+The results will be printed in the terminal and a jet-by-jet comparison will be in "matches.txt".
