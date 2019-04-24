@@ -228,12 +228,12 @@ data_read:
 			int nx = clusters[k].nx_tracks;
 			//Convert integers to binary strings.
 //			cout << "nclust: " << k << " pT: " << pTint << endl;
-			bin_z = int_to_bin(zint, 6);
+			bin_z = int_to_bin(zint, 4);
 			bin_eta = int_to_bin(etaint, 5);
 			bin_pT = int_to_bin(pTint, pTbits);
 			bin_phi = int_to_bin(phi, 5);
-			bin_nt = int_to_bin(nt, 9);
-			bin_nx = int_to_bin(nx, 9);
+			bin_nt = int_to_bin(nt, 5);
+			bin_nx = int_to_bin(nx, 4);
 			//Concatenate into one binary string, convert to hex, write to output file.
 			data = bin_nt + bin_nx + bin_z + bin_eta + bin_phi + bin_pT;
 			data = bin_to_hex(data);
@@ -242,7 +242,7 @@ data_read:
          } //for each zbin
 		if(mzb.ht == 0) cout << "WARNING: HT = 0 (Event " << nevents << ")" << endl;
 		ht_out << mzb.znum << "\t" << mzb.ht << endl;
-		out_clusts << "00000000000" << endl;
+		out_clusts << "00000000" << endl;
     }
 	for(int it = 0; it < nphibins; ++it) {
         	in_tracks[it].close();

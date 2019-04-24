@@ -47,7 +47,7 @@ NEW_EVENT:
 		getline(emfile, data);
 		if(data == "") break;
               //only one event at a time now!
-		if(data == "00000000000") break;
+		if(data == "00000000") break;
 		emclusts.push_back(data);
 		emused.push_back(0);	
 	}
@@ -91,13 +91,13 @@ NEW_EVENT:
 		if(emused[i]){
 			continue;
 		}
-		emdat = hex_to_bin(emclusts[i], 43);
-		emintntrx = bin_to_int(emdat.substr(0,9));
-		emintxtrx = bin_to_int(emdat.substr(9,9));
-		emintz = bin_to_int(emdat.substr(18,6));
-		eminteta = bin_to_int(emdat.substr(24, 5));
-		emintphi = bin_to_int(emdat.substr(29, 5));
-		emintpT = bin_to_int(emdat.substr(34, 9));
+		emdat = hex_to_bin(emclusts[i], 32);
+		emintntrx = bin_to_int(emdat.substr(0,5));
+		emintxtrx = bin_to_int(emdat.substr(5,4));
+		emintz = bin_to_int(emdat.substr(9,4));
+		eminteta = bin_to_int(emdat.substr(13, 5));
+		emintphi = bin_to_int(emdat.substr(18, 5));
+		emintpT = bin_to_int(emdat.substr(23, 9));
 		for(j = 0; j < nsim; ++j){
 			if(simused[j]){
 				continue;
@@ -132,13 +132,13 @@ NEW_EVENT:
 		if(emused[i]){
 			continue;
 		}
-		emdat = hex_to_bin(emclusts[i], 43);
-		emintntrx = bin_to_int(emdat.substr(0,9));
-		emintxtrx = bin_to_int(emdat.substr(9,9));
-		emintz = bin_to_int(emdat.substr(18,6));
-		eminteta = bin_to_int(emdat.substr(24, 5));
-		emintphi = bin_to_int(emdat.substr(29, 5));
-		emintpT = bin_to_int(emdat.substr(34, 9));
+		emdat = hex_to_bin(emclusts[i], 32);
+		emintntrx = bin_to_int(emdat.substr(0,5));
+		emintxtrx = bin_to_int(emdat.substr(5,4));
+		emintz = bin_to_int(emdat.substr(9,4));
+		eminteta = bin_to_int(emdat.substr(13, 5));
+		emintphi = bin_to_int(emdat.substr(18, 5));
+		emintpT = bin_to_int(emdat.substr(23, 9));
 		for(j = 0; j < nsim; ++j){
 			if(simused[j]){
 				continue;
@@ -179,13 +179,13 @@ NEW_EVENT:
 		if(emused[i]){
 			continue;
 		}
-		emdat = hex_to_bin(emclusts[i], 43);
-		emintntrx = bin_to_int(emdat.substr(0,9));
-		emintxtrx = bin_to_int(emdat.substr(9,9));
-		emintz = bin_to_int(emdat.substr(18,6));
-		eminteta = bin_to_int(emdat.substr(24, 5));
-		emintphi = bin_to_int(emdat.substr(29, 5));
-		emintpT = bin_to_int(emdat.substr(34, 9));
+		emdat = hex_to_bin(emclusts[i], 32);
+		emintntrx = bin_to_int(emdat.substr(0,5));
+		emintxtrx = bin_to_int(emdat.substr(5,4));
+		emintz = bin_to_int(emdat.substr(9,4));
+		eminteta = bin_to_int(emdat.substr(13, 5));
+		emintphi = bin_to_int(emdat.substr(18, 5));
+		emintpT = bin_to_int(emdat.substr(23, 9));
 		outfile << emclusts[i] << endl << "  z: " << emintz << " eta: " << eminteta
 		   << " phi: " << emintphi<< " pT: " << emintpT
 		   << " ntracks: " << emintntrx << " ndisplaced_tracks: " << emintxtrx << "\tEvent: " << nevent << endl; 
