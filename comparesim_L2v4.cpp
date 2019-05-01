@@ -18,13 +18,18 @@ using namespace std;
 int main(int argc, char ** argv){
 	ifstream simfile;
 	simfile.open("sim_outL2.txt");
-	ifstream emfile;
-	string filename = "int_em_out.txt";
-	emfile.open(filename.c_str());
-	ifstream emht;
-	emht.open("ht_out.txt");
-	ifstream simht;
-	simht.open("sim_outht.txt");
+//gracefully catch file-not-found error
+	if(simfile.fail()) {
+                cout << "Error: Could not open sim_outL2.txt." << endl;
+                return 0;
+        }
+        ifstream emfile;
+        string filename = "int_em_out.txt";
+        emfile.open(filename.c_str());
+        if(emfile.fail()) {
+                cout << "Error: Could not open int_em_out.txt." << endl;
+                return 0;
+        }
 	ofstream outfile;
 	outfile.open("matches.txt");
 	string data, data2;
@@ -216,8 +221,6 @@ NEW_EVENT:
      //if both files are all read, we're done here.
 	emfile.close();
 	simfile.close();
-	emht.close();
-	simht.close();
 	outfile.close();
 	cout << tot_matched << " clusters matched." << endl;
 	int xtrasim = tot_unsim;
