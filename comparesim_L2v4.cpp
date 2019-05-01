@@ -107,13 +107,13 @@ NEW_EVENT:
 			if(simused[j]){
 				continue;
 			}
-			simdat = hex_to_bin(simclusts[j], 43);
-			simintntrx = bin_to_int(simdat.substr(11,5));
-			simintxtrx = bin_to_int(simdat.substr(16,4));
-			simintz = bin_to_int(simdat.substr(20,4));
-			siminteta = bin_to_int(simdat.substr(24, 5));
-			simintphi = bin_to_int(simdat.substr(29, 5));
-			simintpT = bin_to_int(simdat.substr(34, 9));
+			simdat = hex_to_bin(simclusts[j], 32);
+			simintntrx = bin_to_int(simdat.substr(0,5));
+			simintxtrx = bin_to_int(simdat.substr(5,4));
+			simintz = bin_to_int(simdat.substr(9,4));
+			siminteta = bin_to_int(simdat.substr(13, 5));
+			simintphi = bin_to_int(simdat.substr(18, 5));
+			simintpT = bin_to_int(simdat.substr(23, 9));
 			if(emintz == simintz && eminteta == siminteta && emintphi == simintphi 
 			   && emintpT == simintpT && emintntrx == simintntrx && emintxtrx == simintxtrx){
 				outfile << emclusts[i] << endl 
@@ -148,14 +148,14 @@ NEW_EVENT:
 			if(simused[j]){
 				continue;
 			}
-			simdat = hex_to_bin(simclusts[j], 43);
+			simdat = hex_to_bin(simclusts[j], 32);
 		//simdat starts with 11 0s for now...
-			simintntrx = bin_to_int(simdat.substr(11,5));
-			simintxtrx = bin_to_int(simdat.substr(16,4));
-			simintz = bin_to_int(simdat.substr(20,4));
-			siminteta = bin_to_int(simdat.substr(24, 5));
-			simintphi = bin_to_int(simdat.substr(29, 5));
-			simintpT = bin_to_int(simdat.substr(34, 9));
+			simintntrx = bin_to_int(simdat.substr(0,5));
+			simintxtrx = bin_to_int(simdat.substr(5,4));
+			simintz = bin_to_int(simdat.substr(9,4));
+			siminteta = bin_to_int(simdat.substr(13, 5));
+			simintphi = bin_to_int(simdat.substr(18, 5));
+			simintpT = bin_to_int(simdat.substr(23, 9));
 			if(emintz == simintz && emintphi == simintphi && fabs(eminteta - siminteta) <= 1 && fabs(emintpT - simintpT) <= 5){
 				if(almost == 0) {
 					outfile <<"\nAlmost Matched\n" << "Emulation clusters \t\t\t\t\t\tSimulation clusters\n";
@@ -206,13 +206,13 @@ NEW_EVENT:
 		if(simused[j]){
 			continue;
 		}
-			simdat = hex_to_bin(simclusts[j], 43);
-			simintntrx = bin_to_int(simdat.substr(11,5));
-			simintxtrx = bin_to_int(simdat.substr(16,4));
-			simintz = bin_to_int(simdat.substr(20,4));
-			siminteta = bin_to_int(simdat.substr(24, 5));
-			simintphi = bin_to_int(simdat.substr(29, 5));
-			simintpT = bin_to_int(simdat.substr(34, 9));
+			simdat = hex_to_bin(simclusts[j], 32);
+			simintntrx = bin_to_int(simdat.substr(0,5));
+			simintxtrx = bin_to_int(simdat.substr(5,4));
+			simintz = bin_to_int(simdat.substr(9,4));
+			siminteta = bin_to_int(simdat.substr(13, 5));
+			simintphi = bin_to_int(simdat.substr(18, 5));
+			simintpT = bin_to_int(simdat.substr(23, 9));
 		outfile << simclusts[j] << endl << "  z: " << simintz << " eta: " << siminteta
 		   << " phi: " << simintphi << " pT: " << simintpT << " ntracks: " << simintntrx << " ndisplaced_tracks: " << simintxtrx << endl; 
 	}
