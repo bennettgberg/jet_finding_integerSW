@@ -1,6 +1,6 @@
 2-Layer Jet-finding algorithm for Phase II Upgrade of CMS L1 trigger (for HL-LHC)
 Software Emulation
-Authors: Bennett Greenberg, Felipe Paucar-Velasquez, Yuri Gershtein 
+Authors: Bennett Greenberg, Felipe Paucar-Velasquez, Yuri Gershtein, Tyler Wu
  (HEX lab at Rutgers, the State University of New Jersey-Revolutionary for 250 years)
 
 To create binary file for running emulation, run "make".
