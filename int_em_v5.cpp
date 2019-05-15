@@ -66,7 +66,8 @@ int main(int argc, char ** argv){
 //#	15 bits of hit mask
 //#	 2 bits of spare
 //# For a total of a 100 bit track. For our purposes all will be 0 except the ones with *s.
-	//Open input file, read data to tracks array.
+	//Open input file, read data to tracks array
+	//number of tracks in each phi bin is 24 for now.
 	ifstream in_tracks[nphibins];
 	int ntrks[nphibins];
 	for(int i = 0; i < nphibins; ++i){
