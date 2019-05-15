@@ -63,7 +63,7 @@ NEW_EVENT:
 		getline(simfile, data);
 		if(data == "") break;
 	      //One event at a time only!
-		if(data == "00000000000") break;
+		if(data == "00000000") break;
 	    //If a cluster contains an X, there is a problem somewhere.
 		if(data.find('x') != string::npos || data.find('X') != string::npos){
 			cout << "Error! Cluster " << data << " found in simulation." << endl;
