@@ -82,8 +82,6 @@ int main(int argc, char ** argv){
 	ofstream out_clusts;
 	string outname = "int_em_out.txt";
 	out_clusts.open(outname.c_str());
-	ofstream ht_out;
-	ht_out.open("ht_out.txt");
 	int zint;
 	int etaint;
 	int pTint;
@@ -130,6 +128,7 @@ int main(int argc, char ** argv){
 			}
 			ntrks[pslice]++;
 			bin_data = hex_to_bin(data_in, 100); 
+//pTinverse-->pT_actual
 			pTinverse = bin_to_int(bin_data.substr(0, 16));
 			t = bin_to_int(bin_data.substr(56, 12));
 			z0 = bin_to_int(bin_data.substr(44, 12));
@@ -194,7 +193,7 @@ data_read:
 		if(ntracks == 0){ continue;}
 		cout << "****EVENT " << nreal_events << " ****" << endl;
 		nreal_events++;
-		maxzbin mzb = L2_cluster(tracks, nzbins, ntracks);
+		maxzbin mzb = L2_cluster(tracks, nzbins, ntracks); //left off here
 		if(mzb.isEmpty == true) { 
 			continue;
 		}
