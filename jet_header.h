@@ -39,7 +39,7 @@ struct etaphibin {
 
 //store important information for plots
 struct maxzbin {
-	int znum;            //Numbered from 0 to nzbins (16, 32, or 64) in order.
+	int znum;            //Numbered from 0 to nzbins-2 (4 ) //16, 32, or 64) in order.
 	int nclust;          //number of clusters in this bin.
 //	etaphibin * clusters;     //list of all the clusters in this bin.
 	vector<etaphibin> clusters;

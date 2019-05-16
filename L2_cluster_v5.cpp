@@ -3,7 +3,6 @@
 vector<maxzbin> all_zbins(nzbins);
 //input array of track_data, output zbin of maximum ht.
 maxzbin L2_cluster(vector<track_data> tracks, int nzbins, int ntracks){
-//	all_zbins.resize(nzbins);
 	maxzbin mzb = all_zbins[0];
     //returns NULL if there are no tracks for this event.
         if(ntracks == 0){
@@ -13,15 +12,12 @@ maxzbin L2_cluster(vector<track_data> tracks, int nzbins, int ntracks){
 	else {
 	     mzb.isEmpty = false;
 	}
+//zstep is HALF of the width of a zbin!
         const float zstep = 2.0 * maxz / nzbins;
         
 	float zmin = -1.0*maxz;
 	float zmax = zmin + 2*zstep;
 	//Create grid of phibins! 
-//	etaphibin ** epbins = (etaphibin **)malloc(nphibins * sizeof(etaphibin *));
-//	for(int i = 0; i < nphibins; ++i){
-//		epbins[i] = (etaphibin *)malloc(nphibins * sizeof(etaphibin));
-//	}
 	etaphibin epbins[nphibins][netabins];
 	float phi = -1.0 * M_PI;
 	float eta;
@@ -132,7 +128,6 @@ maxzbin L2_cluster(vector<track_data> tracks, int nzbins, int ntracks){
 			trx2 = 0;
 			xct1 = 0;
 			xct2 = 0;
-			//L2cluster[nclust] = L1clusters[phibin][imax];
 			L2cluster.push_back(L1clusters[phibin][imax]);
 			L1clusters[phibin][imax].used = true;
 		//Add pT of upper neighbor.
@@ -217,8 +212,8 @@ maxzbin L2_cluster(vector<track_data> tracks, int nzbins, int ntracks){
 					++nclust;
 					continue;
 				}
-			}//End not last phibin(23)
-			else { //if it is phibin 23
+			}//End not last phibin(26)
+			else { //if it is phibin 26
 				L1clusters[phibin][imax].used = true;
 				++nclust;
 			}
@@ -254,7 +249,6 @@ maxzbin L2_cluster(vector<track_data> tracks, int nzbins, int ntracks){
 
 	   //if ht is larger than previous max, this is the new vertex zbin.
 		all_zbins[zbin].znum = zbin;
-	//	all_zbins[zbin].clusters = (etaphibin *)malloc(nclust*sizeof(etaphibin));
 		all_zbins[zbin].nclust = nclust;
 		all_zbins[zbin].clusters.clear();
 		etaphibin allzclust;

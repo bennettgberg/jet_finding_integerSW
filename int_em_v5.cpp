@@ -241,14 +241,12 @@ data_read:
 		}
          } //for each zbin
 		if(mzb.ht == 0) cout << "WARNING: HT = 0 (Event " << nevents << ")" << endl;
-		ht_out << mzb.znum << "\t" << mzb.ht << endl;
 		out_clusts << "00000000" << endl;
     }
 	for(int it = 0; it < nphibins; ++it) {
         	in_tracks[it].close();
 	}
 	out_clusts.close();
-	ht_out.close();
-	cout << "Data written to " << outname << " and ht_out.txt" << endl;
+	cout << "Data written to " << outname << endl;
 	return 0;
 }

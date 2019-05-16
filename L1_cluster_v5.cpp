@@ -7,7 +7,6 @@
 
 vector<etaphibin> L1_cluster(etaphibin phislice[netabins]){
 
-//		etaphibin * clusters = (etaphibin *)malloc(netabins/2 * sizeof(etaphibin));
 		vector<etaphibin> clusters(netabins/2);
 	//Find eta-phibin with maxpT, make center of cluster, add neighbors if not already used.
 		int my_pt, left_pt, right_pt, right2pt;
