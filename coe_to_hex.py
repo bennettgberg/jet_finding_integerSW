@@ -116,4 +116,6 @@ for i in range(nphi):
     data.close();
     data_w.close();
 for i in range(nphi):
-    os.remove('phi'+str(i)+'.dat');    
+    os.remove('phi'+str(i)+'.dat');  
+for i in range(nphi):
+    os.rename('phi'+str(i)+'_mod.dat','phi'+str(i)+'.dat');
