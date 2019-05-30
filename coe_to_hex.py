@@ -4,8 +4,8 @@ import os
 phi0 = -math.pi;
 def avg_phi(phi): #phi is the float representation of the given phi value of each track
     for i in range(9):
-        if (phi >= phi0+(2*i*math.pi)/9) and (phi < phi0+(2*(i+1)*math.pi)/9):
-            avg_phi = phi0 + (i*math.pi)/9 + ((i+1)*math.pi)/9;
+        if (phi >= phi0+(2.0*i*math.pi)/9.0) and (phi < phi0+(2.0*(i+1.0)*math.pi)/9.0):
+            avg_phi = phi0 + (i*math.pi)/9.0 + ((i+1.0)*math.pi)/9.0;
             
     avg_phi=round((avg_phi/math.pi)*(pow(2,16)-1));
     avg_phi=bin(int(float(str(avg_phi))));
@@ -69,7 +69,6 @@ for event in range(nevents):
 		fname = "phi" + str(phi) + ".dat"
 		phifile = open(fname, 'a')
 		phifile.write("0x" + "".join(['0' for i in range(int(math.ceil(wordlength/4)))]) + "\n")
-
 coe.close()
 
 def num_lines(name):
@@ -96,15 +95,16 @@ for i in range(nphi):
         x=zero+x;
         if x[17]==0:
             phi_bin=x[18:35];
-            sign=1;
+            sign=1.0;
         else:
             phi_bin=x[18:35];
-            sign=-1;
-        phi=sign*math.pi*(int(phi_bin,2)/(pow(2,16)-1));
+            sign=-1.0;
+        phi=sign*math.pi*(int(phi_bin,2)/(pow(2,16)-1.0));
         y=avg_phi(phi);
         x=x.replace(x[17:34],y);
         x=hex(int(x,2));
         x=x.split('x')[1];
+        x=x.split('L')[0];
         if len(x)<25:
             zlist=['0' for k in range(25-len(x))];
             zeros=''.join(zlist);
