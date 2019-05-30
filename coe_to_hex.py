@@ -70,7 +70,6 @@ for event in range(nevents):
 		phifile = open(fname, 'a')
 		phifile.write("0x" + "".join(['0' for i in range(int(math.ceil(wordlength/4)))]) + "\n")
 
-print("Data written successfully")
 coe.close()
 
 def num_lines(name):
@@ -119,3 +118,4 @@ for i in range(nphi):
     os.remove('phi'+str(i)+'.dat');  
 for i in range(nphi):
     os.rename('phi'+str(i)+'_mod.dat','phi'+str(i)+'.dat');
+print("Data written successfully");
