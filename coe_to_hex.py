@@ -8,7 +8,7 @@ def avg_phi(phi): #phi is the float representation of the given phi value of eac
             avg_phi = phi0 + (i*math.pi)/9 + ((i+1)*math.pi)/9;
             
     avg_phi=round((avg_phi/math.pi)*(pow(2,16)-1));
-    avg_phi=bin(int(str(avg_phi)));
+    avg_phi=bin(int(float(str(avg_phi))));
     avg_phi=avg_phi.split('b')[1];
     
     #this is to make sure the length of avg_phi is 17 bits
