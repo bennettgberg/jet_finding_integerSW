@@ -38,7 +38,7 @@ int main(int argc, char ** argv){
 //	const float pTinvmax = 0.5;
      //number of bits the firmware will use for pT
 	const int pTbits = 15;
-	const int ntbits = 12;
+//	const int ntbits = 12;
 	const int nzbits = 12;
      //value of one bit of pT
 //	const float pTstep = pTmax / (pow(2, pTbits)-1);
@@ -49,7 +49,7 @@ int main(int argc, char ** argv){
      //float values of these
 //	double pTinvf;
 	double pT;
-	double tf;
+//	double tf;
 	int counter;
 	string data_in;
 	string bin_data;
