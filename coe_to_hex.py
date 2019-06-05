@@ -1,9 +1,40 @@
-
 import math
+import os
+#this function takes in any floating point value of phi and spits out the average value of the phi sector in binary 
+phi0 = -math.pi;
+def avg_phi(phi): #phi is the float representation of the given phi value of each track
+    for i in range(9):
+        if (phi >= phi0+(2.0*i*math.pi)/9.0) and (phi < phi0+(2.0*(i+1.0)*math.pi)/9.0):
+            avg_phi = phi0 + (i*math.pi)/9.0 + ((i+1.0)*math.pi)/9.0;
+            
+    avg_phi=round((avg_phi/math.pi)*(pow(2,16)-1));
+    avg_phi=bin(int(float(str(avg_phi))));
+    avg_phi=avg_phi.split('b')[1];
+    
+    #this is to make sure the length of avg_phi is 17 bits
+    S=len(avg_phi);
+    diff=17-S;
+    
+    if diff>=1:
+        zero='';
+        for i in range(diff-1):
+            zero=zero+'0';
+    else: 
+        zero='0';
+        
+    #this part is to assign the sign of avg_phi. "0" for positive or zero and "1" for negative
+    if phi<0:
+        avg_phi='1'+zero+avg_phi;
+    elif phi==0:
+        avg_phi='0'+zero+avg_phi;
+    else:
+        avg_phi='0'+zero+avg_phi;
+    return avg_phi;
+
 #This script will convert a coe file (in binary format) to a usable hexadecimal file for input to C++ emulation.
 nfibers = 12 #how many fibers have data in the coe file
 nphi = 27 #how many total phi sectors there are (zero out unused ones)
-wordlength = 100
+wordlength = 100 #the number of bits per track
 tpe = 24  #tracks per event (for each fiber)
 nevents = 161 #how many events to make inputs for
 coe = open("vcu118_input_patterns.coe", "r")
@@ -38,6 +69,53 @@ for event in range(nevents):
 		fname = "phi" + str(phi) + ".dat"
 		phifile = open(fname, 'a')
 		phifile.write("0x" + "".join(['0' for i in range(int(math.ceil(wordlength/4)))]) + "\n")
+coe.close()
 
-print "Data written successfully"
-coe.close()		
+def num_lines(name):
+    length=len(open(name).readlines());
+    return length;
+
+for i in range(nphi):
+    data=open('phi'+str(i)+'.dat','r');
+    data_w=open('phi'+str(i)+'_mod.dat','w')
+    for j in range(num_lines('phi'+str(i)+'.dat')):
+        x=data.readline();
+        x=int(x,16);
+        x=bin(x);
+        x=x.split('b')[1];
+        
+        S=len(x);
+        diff=100-S;
+        if diff>=1:
+            zero='';
+            for i in range(diff):
+                zero=zero+'0';
+        else: 
+            zero='0';
+        x=zero+x;
+        if x[17]==0:
+            phi_bin=x[18:35];
+            sign=1.0;
+        else:
+            phi_bin=x[18:35];
+            sign=-1.0;
+        phi=sign*math.pi*(int(phi_bin,2)/(pow(2,16)-1.0));
+        y=avg_phi(phi);
+        x=x.replace(x[17:34],y);
+        x=hex(int(x,2));
+        x=x.split('x')[1];
+        x=x.split('L')[0];
+        if len(x)<25:
+            zlist=['0' for k in range(25-len(x))];
+            zeros=''.join(zlist);
+        else:
+            zeros='';
+        x='0x'+zeros+x;
+        data_w.write(x+"\n");
+    data.close();
+    data_w.close();
+for i in range(nphi):
+    os.remove('phi'+str(i)+'.dat');  
+for i in range(nphi):
+    os.rename('phi'+str(i)+'_mod.dat','phi'+str(i)+'.dat');
+print("Data written successfully");

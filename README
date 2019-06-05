@@ -15,3 +15,13 @@ To compare simulation and emulation results:
 2. Copy the simulation results to this directory (sim_outL2.txt).
 3. Execute "./compare" (run "make compare" first if the "compare" binary doesn't already exist)
 The results will be printed in the terminal and a jet-by-jet comparison will be in "matches.txt".
+
+Add these changes:
+Inputs: 27 phi sectors --> 9 phi sectors (phi sectors not the same as phi bins)
+	Each phi sector will have one input for positive eta and one for negative eta
+	24 --> 112 tracks/input_cable/event
+	t input --> eta input (delete t to eta conversion in code in the .cpp file)
+	change to new input track word (change which bits are assigned to which values) *look at picture in email*
+
+For now, make the conversions listed above. i.e. do the first four changes.
+in coe_to_hex.py, for the phi part of the given data, output the middle value of the phi sector in hexadecimal instead of the given phi value.
