@@ -70,15 +70,25 @@ int main(int argc, char ** argv){
 	//Open input file, read data to tracks array
 	//number of tracks in each phi bin is 24 for now.
 	ifstream in_tracks[nphibins];
-	int ntrks[nphibins];
+	int ntrks[2][nphibins];
 	for(int i = 0; i < nphibins; ++i){
 		string s;
 		stringstream out;
 		out << i;
 		s = out.str();
-		filename = fname + s + ".dat";
+		filename = fname + s + "_p.dat";
 		in_tracks[i].open(filename.c_str());
-		ntrks[i] = 0;
+		ntrks[0][i] = 0;
+	}
+	//see if this change works
+	for(int i = 0; i < nphibins; ++i){
+		string s;
+		stringstream out;
+		out << i;
+		s = out.str();
+		filename = fname + s + "_n.dat";
+		in_tracks[i].open(filename.c_str());
+		ntrks[1][i] = 0;
 	}
 	ofstream out_clusts;
 	string outname = "int_em_out.txt";
@@ -111,13 +121,17 @@ int main(int argc, char ** argv){
 			    goto data_read;
 		}
 	//Get all the lines of 0s of the last event (consequence of all phisectors having same number of tracks for each event).
-		for(int tk=ntrks[pslice]; tk < last_maxntrk; ++tk){
+		for(int tk=ntrks[0][pslice]; tk < last_maxntrk; ++tk){
 			getline(in_tracks[pslice], data_in);
 		}
-		ntrks[pslice] = 0;
+		ntrks[0][pslice] = 0;
+		for(int tk=ntrks[1][pslice]; tk < last_maxntrk; ++tk){//see if this code works
+			getline(in_tracks[pslice], data_in);
+		}
+		ntrks[1][pslice] = 0;
 		while(true) {
 			//if data is 0, event has ended.
-			if(data_in == "0x0000000000000000000000000"){
+			if(data_in == "0x000000000000000000000000"){
 				if(nevents < eventstart){
 					ntracks = 0;
 					break;
@@ -127,8 +141,9 @@ int main(int argc, char ** argv){
 			if(data_in == "") { //if end of file reached, we're all done reading in data.
 				    goto data_read;
 			}
-			ntrks[pslice]++;
-			bin_data = hex_to_bin(data_in, 100);
+			ntrks[0][pslice]++;
+			ntrks[1][pslice]++;
+			bin_data = hex_to_bin(data_in, 96);
 //pTinverse-->pT_actual
 			pTinverse = bin_to_int(bin_data.substr(0, 15));
 			t = bin_to_int(bin_data.substr(27, 16)); //t is actually eta
@@ -185,7 +200,8 @@ int main(int argc, char ** argv){
 			tracks.push_back(trkd);
 			getline(in_tracks[pslice], data_in);
 		}
-		if(maxntrk < ntrks[pslice]) maxntrk = ntrks[pslice];
+		if(maxntrk < ntrks[0][pslice]) maxntrk = ntrks[0][pslice];
+		if(maxntrk < ntrks[1][pslice]) maxntrk = ntrks[1][pslice];
 	}
 
 	//Call L2cluster
