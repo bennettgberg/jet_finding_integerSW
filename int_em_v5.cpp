@@ -38,7 +38,7 @@ int main(int argc, char ** argv){
 //	const float pTinvmax = 0.5;
      //number of bits the firmware will use for pT
 	const int pTbits = 9;
-	const int ntbits = 12;
+	const int ntbits = 16;
 	const int nzbits = 12;
      //value of one bit of pT
 //	const float pTstep = pTmax / (pow(2, pTbits)-1);
@@ -50,6 +50,7 @@ int main(int argc, char ** argv){
 //	double pTinvf;
 	double pT;
 	double tf;
+	double phi0f;
 	int counter;
 	string data_in;
 	string bin_data;
@@ -68,17 +69,31 @@ int main(int argc, char ** argv){
 //# For a total of a 100 bit track. For our purposes all will be 0 except the ones with *s.
 	//Open input file, read data to tracks array
 	//number of tracks in each phi bin is 24 for now.
-	ifstream in_tracks[nphibins];
-	int ntrks[nphibins];
-	for(int i = 0; i < nphibins; ++i){
+	ifstream in_tracks[nphibins*2/3];
+	int ntrks[nphibins*2/3];
+	for(int i = 0; i < nphibins/3; ++i){
 		string s;
 		stringstream out;
 		out << i;
 		s = out.str();
-		filename = fname + s + ".dat";
-		in_tracks[i].open(filename.c_str());
-		ntrks[i] = 0;
+		filename = fname + s + "_p.dat";
+		in_tracks[i*2+1].open(filename.c_str());
+		ntrks[i*2+1] = 0;
 	}
+	for(int i = 0; i < nphibins/3; ++i){
+		string s;
+		stringstream out;
+		out << i;
+		s = out.str();
+		filename = fname + s + "_n.dat";
+		in_tracks[i*2].open(filename.c_str());
+		ntrks[i*2] = 0;
+	}
+	/*for(int i = 0; i < nphibins*2/3; ++i){
+		int contents;
+		contents = ntrks[i];
+		cout << contents << endl;
+	}*/
 	ofstream out_clusts;
 	string outname = "int_em_out.txt";
 	out_clusts.open(outname.c_str());
@@ -86,6 +101,8 @@ int main(int argc, char ** argv){
 	int etaint;
 	int pTint;
 	int phi;
+	int phi0;
+	int pslice_final;
 	string data;
 	string bin_z;
 	string bin_eta;
@@ -104,7 +121,7 @@ int main(int argc, char ** argv){
 	    maxntrk = 0;
 	    vector<track_data> tracks(0);
          //read from one phi slice at a time
-	    for(int pslice = 0; pslice < nphibins; ++pslice){
+	    for(int pslice = 0; pslice < nphibins*2/3; ++pslice){
 		getline(in_tracks[pslice], data_in);
 		if(data_in == "") {
 			    goto data_read;
@@ -116,8 +133,9 @@ int main(int argc, char ** argv){
 		ntrks[pslice] = 0;
 		while(true) {
 			//if data is 0, event has ended. 
-			if(data_in == "0x0000000000000000000000000"){                           
+			if(data_in == "0x000000000000000000000000"){                        
 				if(nevents < eventstart){
+					cout << "ok";
 					ntracks = 0;
 					break;   
 				}
@@ -127,13 +145,14 @@ int main(int argc, char ** argv){
 				    goto data_read;
 			}
 			ntrks[pslice]++;
-			bin_data = hex_to_bin(data_in, 100); 
+			bin_data = hex_to_bin(data_in, 96); 
 //pTinverse-->pT_actual
-			pTinverse = bin_to_int(bin_data.substr(0, 16));
-			t = bin_to_int(bin_data.substr(56, 12));
-			z0 = bin_to_int(bin_data.substr(44, 12));
+			pTinverse = bin_to_int(bin_data.substr(0, 15));
+			t = bin_to_int(bin_data.substr(27, 16));
+			z0 = bin_to_int(bin_data.substr(43, 12));
+			phi0 = bin_to_int(bin_data.substr(15, 12));
 			track_data trkd;
-			if(bin_data.substr(99, 1) == "1"){
+			if(bin_data.substr(95, 1) == "1"){
 				trkd.xbit = true;
 			}
 			else {
@@ -161,10 +180,12 @@ int main(int argc, char ** argv){
 			else {
 				t -= (int)pow(2, ntbits-1);
 			}
-			tf = -maxt + t * 2.0 * maxt / (pow(2, ntbits)-1);
-			trkd.eta = -1.0 * log(sqrt(tf*tf + 1.0) - tf);
+			tf = -maxeta + t * 2.0 * maxeta / (pow(2, ntbits)-1);
+			trkd.eta = tf; //-1.0 * log(sqrt(tf*tf + 1.0) - tf);
 			if(trkd.eta > maxeta) {
 				trkd.eta = maxeta;
+				cout << "eta big";
+				cout << tf << endl;
 			}
 			else if(trkd.eta < -1.0 * maxeta) {
 				trkd.eta = -1.0 * maxeta;
@@ -176,10 +197,51 @@ int main(int argc, char ** argv){
 			else {
 				z0 -= (int)pow(2, nzbits-1);
 			}
+			//cout << phi0 << endl;
+			if(1.0 * phi0 < pow(2, 12-1)){
+				phi0 += (int)pow(2, 12-1);
+			}
+			else {
+				phi0 -= (int)pow(2, 12-1);
+			}
+			//cout << phi0 << endl;
 			trkd.z = -1.0*maxz + z0 * 2.0 * maxz /( pow(2, nzbits)-1);
-			trkd.phi = -1.0*maxphi + pslice * phistep + (phistep / 2);  
+			phi0f = (-1.0*phistep*3/2 + phi0 * 2.0 * phistep*3/2 /( pow(2, 12)-1));
+			//cout << phi0f << endl;
+			//cout << pslice << endl;
+			
+			if(pslice % 2 == 0) {
+				if(phi0f >= -1.0*M_PI/9 && phi0f < -1.0*M_PI/27) {
+					pslice_final = pslice*3/2;
+				}
+				else if(phi0f >= -1.0*M_PI/27 && phi0f < M_PI/27) {
+					pslice_final = pslice*3/2 + 1;
+				}
+				else if(phi0f >= M_PI/27 && phi0f < M_PI/9) {
+					pslice_final = pslice*3/2+2;
+				}
+				else {
+					cout << "uh oh";
+				}
+			}
+			else if(pslice % 2 == 1) {
+				if(phi0f >= -1.0*M_PI/9 && phi0f < -1.0*M_PI/27) {
+					pslice_final = (pslice-1)*3/2;
+				}
+				else if(phi0f >= -1.0*M_PI/27 && phi0f < M_PI/27) {
+					pslice_final = (pslice-1)*3/2+1;
+				}
+				else if(phi0f >= M_PI/27 && phi0f < M_PI/9) {
+					pslice_final = (pslice-1)*3/2+2;
+				}
+				else {
+					cout << "uh oh";
+				}
+			}
+			trkd.phi = -1.0*maxphi + pslice_final * phistep + (phistep / 2);  
+			if(pT == 9) {cout << bin_to_int(bin_data.substr(15, 12)) << endl; cout << phi0 << endl; cout << phi0f << endl; cout << pslice << endl; cout << pslice_final << endl; cout << -1.0*maxphi + pslice_final * phistep + (phistep / 2);}
 			trkd.bincount = 0;
-			++ntracks;                                         
+			++ntracks;                                       
 			tracks.push_back(trkd);
 			getline(in_tracks[pslice], data_in);
 		}
@@ -243,7 +305,7 @@ data_read:
 		if(mzb.ht == 0) cout << "WARNING: HT = 0 (Event " << nevents << ")" << endl;
 		out_clusts << "00000000" << endl;
     }
-	for(int it = 0; it < nphibins; ++it) {
+	for(int it = 0; it < nphibins*2/3; ++it) {
         	in_tracks[it].close();
 	}
 	out_clusts.close();
