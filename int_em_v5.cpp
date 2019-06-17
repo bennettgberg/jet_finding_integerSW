@@ -112,15 +112,11 @@ int main(int argc, char ** argv){
 		//in_tracks[1][i].open(filename.c_str());
 	}
 
-
-
-
 	for(int i = 0; i < 2; ++i){
 		for(int j = 0; j < nphibins; ++j){
 			ntrks[i][j] = 0;
 		}
 	}
-
 
 	ofstream out_clusts;
 	string outname = "int_em_out.txt";
