@@ -58,7 +58,7 @@ const float etastep = 2.0 * maxeta / netabins;
 const float pTmax = 511.0;//600.0;
 //Upper bound on number of tracks per event.
 const int numtracks = 5000;
-const int nphibins = 27;       
+const int nphibins = 27;      
 const int MAXNT = 31;
 const int MAXNX = 15;
 //phistep is the width of a phibin.
