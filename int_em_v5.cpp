@@ -37,7 +37,7 @@ int main(int argc, char ** argv){
      //abs(pT) must be >2, so abs(1/pT) will be <0.5
 //	const float pTinvmax = 0.5;
      //number of bits the firmware will use for pT
-	const int pTbits = 15;
+	const int pTbits = 9;
 	const int ntbits = 16; //this is for eta
 	const int nzbits = 12;
      //value of one bit of pT
