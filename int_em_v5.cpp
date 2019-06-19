@@ -49,6 +49,7 @@ int main(int argc, char ** argv){
      //float values of these
 //	double pTinvf;
 	double pT;
+	double etaf;
 //	double tf;
 	int counter;
 	string data_in;
@@ -157,7 +158,7 @@ int main(int argc, char ** argv){
 			trkd.pT = (int)pT;
 		//	tracks[ntracks].pT = (int)round(pT / pTstep);
 			//cout << data_in << " pT: " << trkd.pT << endl;
-			trkd.eta = t*1.0;
+			//trkd.eta = t*1.0;
 			//if(1.0 * t < pow(2, ntbits-1)){
 			//	t += (int)pow(2, ntbits-1);
 			//}
@@ -167,18 +168,19 @@ int main(int argc, char ** argv){
 			
 			//tf = -maxt + t * 2.0 * maxt / (pow(2, ntbits)-1);
 			//trkd.eta = -1.0 * log(sqrt(tf*tf + 1.0) - tf);
+			if(1.0 * t < pow(2, ntbits-1)){
+				t += (int)pow(2, ntbits-1);
+			}
+			else {
+				t -= (int)pow(2, ntbits-1);
+			}
+			etaf = -maxeta + t * 2.0 * maxeta / (pow(2, ntbits)-1);
+			trkd.eta = etaf; 
 			if(trkd.eta > maxeta) {
 				trkd.eta = maxeta;
 			}
 			else if(trkd.eta < -1.0 * maxeta) {
 				trkd.eta = -1.0 * maxeta;
-			}
-			
-			if(1.0 * trkd.eta < pow(2, ntbits-1)){
-				trkd.eta += (int)pow(2, ntbits-1);
-			}
-			else {
-				trkd.eta -= (int)pow(2, ntbits-1);
 			}
 			
 			if(1.0 * z0 < pow(2, nzbits-1)){
@@ -189,7 +191,6 @@ int main(int argc, char ** argv){
 			}
 			trkd.z = -1.0*maxz + z0 * 2.0 * maxz /( pow(2, nzbits)-1);
 			trkd.phi = -1.0*maxphi + pslice * phistep + (phistep / 2);  
-			trkd.eta = -1.0*maxeta + trkd.eta*2.0*maxeta/(pow(2,ntbits)-1);
 			trkd.bincount = 0;
 			++ntracks;                                         
 			tracks.push_back(trkd);
