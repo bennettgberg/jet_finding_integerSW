@@ -5,7 +5,7 @@
  *
  * 2019
  *
- * Authors: Bennett Greenberg, Felipe Paucar-Velasquez, Yuri Gershtein
+ * Authors: Bennett Greenberg, Felipe Paucar-Velasquez, Yuri Gershtein, Sam Leigh
  * Rutgers, the State University of New Jersey
  *  Revolutionary for 250 years
  */
@@ -38,18 +38,18 @@ int main(int argc, char ** argv){
 //	const float pTinvmax = 0.5;
      //number of bits the firmware will use for pT
 	const int pTbits = 9;
-	const int ntbits = 16;
+	const int netabits = 16;
 	const int nzbits = 12;
      //value of one bit of pT
 //	const float pTstep = pTmax / (pow(2, pTbits)-1);
      //the three parts of the incoming track
 	int pTinverse; //as of now, it is actually just pT
-	int t;
+	int eta;
 	int z0;
      //float values of these
 //	double pTinvf;
 	double pT;
-	double tf;
+	double etaf;
 	double middle_phi;
 	double phi0f;
 	int counter;
@@ -57,17 +57,18 @@ int main(int argc, char ** argv){
 	string bin_data;
 	string filename;
 //#  This version should be consistent with the interface specified in the technical proposal:
-//#	16 bits of pT* (note: NOT 1/pT)
-//#	 1 bit  of charge
-//#	17 bits of phi0
-//#	10 bits of d0
+//#	15 bits of pT* (note: NOT 1/pT)(encoded as q/R)
+//#	12 bits of phi*
+//#	16 bits of eta* (encoded as tan(lambda))
 //#	12 bits of z0*
-//#	12 bits of t*
-//#	10 bits of chi2
-//#	 5 bits of stub pT consistency
-//#	15 bits of hit mask
-//#	 2 bits of spare
-//# For a total of a 100 bit track. For our purposes all will be 0 except the ones with *s.
+//#	13 bits of d0
+//#	 4 bits of chi2
+//#	 3 bits of Bend-chi2
+//#	 7 bits of hit mask
+//#	 3 bits of trackquality MVA
+//#	 6 bits of two specialized MVA selections
+//#	 5 bits of spare
+//# For a total of a 96 bit track. For our purposes all will be 0 except the ones with *s.
 	//Open input file, read data to tracks array
 	//number of tracks in each phi bin is 24 for now.
 	ifstream in_tracks[nphibins*2/3];
@@ -149,7 +150,7 @@ int main(int argc, char ** argv){
 			bin_data = hex_to_bin(data_in, 96); 
 //pTinverse-->pT_actual
 			pTinverse = bin_to_int(bin_data.substr(0, 15));
-			t = bin_to_int(bin_data.substr(27, 16));
+			eta = bin_to_int(bin_data.substr(27, 16));
 			z0 = bin_to_int(bin_data.substr(43, 12));
 			phi0 = bin_to_int(bin_data.substr(15, 12));
 			track_data trkd;
@@ -175,20 +176,19 @@ int main(int argc, char ** argv){
 			pT = pTinverse*1.0;
 			if(pT > 511) pT = 511;
 			trkd.pT = (int)pT;
-		//	tracks[ntracks].pT = (int)round(pT / pTstep);
-			//cout << data_in << " pT: " << trkd.pT << endl;
-			if(1.0 * t < pow(2, ntbits-1)){
-				t += (int)pow(2, ntbits-1);
+
+			if(1.0 * eta < pow(2, netabits-1)){
+				eta += (int)pow(2, netabits-1);
 			}
 			else {
-				t -= (int)pow(2, ntbits-1);
+				eta -= (int)pow(2, netabits-1);
 			}
-			tf = -maxeta + t * 2.0 * maxeta / (pow(2, ntbits)-1);
-			trkd.eta = tf; //-1.0 * log(sqrt(tf*tf + 1.0) - tf);
+			etaf = -maxeta + eta * 2.0 * maxeta / (pow(2, netabits)-1);
+			trkd.eta = etaf; //-1.0 * log(sqrt(tf*tf + 1.0) - tf);
 			if(trkd.eta > maxeta) {
 				trkd.eta = maxeta;
 				cout << "eta big";
-				cout << tf << endl;
+				cout << etaf << endl;
 			}
 			else if(trkd.eta < -1.0 * maxeta) {
 				trkd.eta = -1.0 * maxeta;
@@ -200,30 +200,18 @@ int main(int argc, char ** argv){
 			else {
 				z0 -= (int)pow(2, nzbits-1);
 			}
-			/*if(bin_data.substr(15, 1) == "1") {
-				phi0 = ~bin_to_int(bin_data.substr(16, 11))+1;
-				cout << bin_data.substr(15, 12)<<endl;
-				cout << phi0<<endl;
-				cout << ~phi0+1<<endl;
-			}
-			else {
-				phi0 = bin_to_int(bin_data.substr(16, 11));
-			}*/
-			
-			//cout << phi0 << endl;
+
+			trkd.z = -1.0*maxz + z0 * 2.0 * maxz /( pow(2, nzbits)-1);
+
 			if(1.0 * phi0 < pow(2, 12-1)){
 				phi0 += (int)pow(2, 12-1);
 			}
 			else {
 				phi0 -= (int)pow(2, 12-1);
 			}
-			//cout << "phi0: ";
-			//cout << phi0 << endl;
+
 			phi0f = phi0*(2*M_PI/(pow(2,12)-1))-M_PI/9;
-			//cout << "final phi0f: ";
- 			//cout << phi0f << endl;
-			//phi0f = (-1.0*M_PI/9 + phi0 * 2.0 * M_PI/9 /( pow(2, 12)-1));
-			trkd.z = -1.0*maxz + z0 * 2.0 * maxz /( pow(2, nzbits)-1);
+
 			if(pslice % 2 == 0) {
 				middle_phi = -1*M_PI + M_PI / (9) + (pslice/2) * (2*M_PI / 9);
 			}
@@ -231,46 +219,11 @@ int main(int argc, char ** argv){
 				middle_phi = -1*M_PI + M_PI / (9) + ((pslice-1)/2) * (2*M_PI / 9);
 			}
 			
-			//cout << phi0f<<endl;
+
 			phi0f = phi0f+middle_phi;
-			//phi0 = phi0 * phistep - M_PI/18;
+
 			phi0 = (int)floor((phi0f + M_PI)*(27)/(2*M_PI));
-			//cout << pslice*3/2 << endl;
-			//cout << pslice << endl;
-			//cout << middle_phi << endl;
-			//cout << phi0f<<endl;
-			//cout << phi0<<endl;
-			//cout << phi0f << endl;
-			//cout << pslice << endl;
 			
-			/*if(pslice % 2 == 0) {
-				if(phi0f >= -1.0*M_PI/9 && phi0f < -1.0*M_PI/27) {
-					pslice_final = pslice*3/2+2;
-				}
-				else if(phi0f >= -1.0*M_PI/27 && phi0f < M_PI/27) {
-					pslice_final = pslice*3/2 + 1;
-				}
-				else if(phi0f >= M_PI/27 && phi0f < M_PI/9) {
-					pslice_final = pslice*3/2;
-				}
-				else {
-					cout << "uh oh";
-				}
-			}
-			else if(pslice % 2 == 1) {
-				if(phi0f >= -1.0*M_PI/9 && phi0f < -1.0*M_PI/27) {
-					pslice_final = (pslice-1)*3/2+2;
-				}
-				else if(phi0f >= -1.0*M_PI/27 && phi0f < M_PI/27) {
-					pslice_final = (pslice-1)*3/2+1;
-				}
-				else if(phi0f >= M_PI/27 && phi0f < M_PI/9) {
-					pslice_final = (pslice-1)*3/2;
-				}
-				else {
-					cout << "uh oh";
-				}
-			}*/
 			pslice_final = phi0;
 			trkd.phi = -1.0*maxphi + pslice_final* phistep + (phistep / 2); 
 			trkd.bincount = 0;
