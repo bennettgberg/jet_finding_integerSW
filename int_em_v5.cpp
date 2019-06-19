@@ -1,7 +1,7 @@
 #include "hexbin.h"
 #include "jet_header.h"
 
-/* Software to emulate the hardware 2-layer jet-finding algorithm (integers). *Layers 1 and 2*
+/* Software to emulate the hardware 2-layer jet-finding algorithm (integers). *Layers 1 and 2*           
  *
  * 2019
  *
@@ -14,10 +14,10 @@
 int nzbins = 6;
 int main(int argc, char ** argv){
 	nzbins = 6;
-	int eventstart = 0;
-	int eventend = 999999;
+	int eventstart = 0;            
+	int eventend = 999999;         
 	if(argc == 2){
-		nzbins = atoi(argv[1]);
+		nzbins = atoi(argv[1]);                                                 
 	}
 	else if(argc == 3){
 		eventstart = atoi(argv[1]);
@@ -33,18 +33,18 @@ int main(int argc, char ** argv){
 		exit(0);
 	}
 	cout << "Running with " << nzbins << " zbins. " << endl;
-	string fname = "phi"; // "/home/mapsa/fpga/emulation/phi";
+	string fname = "phi"; // "/home/mapsa/fpga/emulation/phi";  
      //abs(pT) must be >2, so abs(1/pT) will be <0.5
 //	const float pTinvmax = 0.5;
      //number of bits the firmware will use for pT
 	const int pTbits = 15;
-//	const int ntbits = 12;
+	const int ntbits = 16; //this is for eta
 	const int nzbits = 12;
      //value of one bit of pT
 //	const float pTstep = pTmax / (pow(2, pTbits)-1);
      //the three parts of the incoming track
 	int pTinverse; //as of now, it is actually just pT
-	int t;
+	int t; //really just eta now
 	int z0;
      //float values of these
 //	double pTinvf;
@@ -55,20 +55,20 @@ int main(int argc, char ** argv){
 	string bin_data;
 	string filename;
 //#  This version should be consistent with the interface specified in the technical proposal:
-//#	15 bits of pT* (note: NOT 1/pT) encoded as q/R
+//#	15 bits of pT* (note: NOT 1/pT)
 //#	12 bits of phi0
 //#	13 bits of d0
 //#	12 bits of z0*
-//#	16 bits of t* (note: this is now eta)
+//#	16 bits of t* (note: actually just eta)
 //#	4 bits of chi2
-//# 3 bits of bend-chi2
-//#	3 bits of track quality MVA
-//# 6 bits for two specialized MVA selections
-//#	7 bits of hit mask
+//#     3 bits of bend-chi2
+//#     7 bits of hit mask
+//#     3 bits of track quality MVA
+//#     6 bits for space for two specialized MVA selections
 //#	5 bits of spare
 //# For a total of a 96 bit track. For our purposes all will be 0 except the ones with *s.
 	//Open input file, read data to tracks array
-	//number of tracks in each phi bin is 24 for now.
+	//number of tracks in each phi bin is 224 for now.
 	ifstream in_tracks[nphibins];
 	int ntrks[nphibins];
 	for(int i = 0; i < nphibins; ++i){
@@ -80,6 +80,7 @@ int main(int argc, char ** argv){
 		in_tracks[i].open(filename.c_str());
 		ntrks[i] = 0;
 	}
+	
 	ofstream out_clusts;
 	string outname = "int_em_out.txt";
 	out_clusts.open(outname.c_str());
@@ -112,26 +113,26 @@ int main(int argc, char ** argv){
 		}
 	//Get all the lines of 0s of the last event (consequence of all phisectors having same number of tracks for each event).
 		for(int tk=ntrks[pslice]; tk < last_maxntrk; ++tk){
-			getline(in_tracks[pslice], data_in);
+			getline(in_tracks[pslice], data_in);	
 		}
 		ntrks[pslice] = 0;
 		while(true) {
-			//if data is 0, event has ended.
-			if(data_in == "0x0000000000000000000000000"){
+			//if data is 0, event has ended. 
+			if(data_in == "0x000000000000000000000000"){                           
 				if(nevents < eventstart){
 					ntracks = 0;
-					break;
+					break;   
 				}
-				break;
+				break;                                                       
 			}//end data is 0; event has ended
 			if(data_in == "") { //if end of file reached, we're all done reading in data.
 				    goto data_read;
 			}
 			ntrks[pslice]++;
-			bin_data = hex_to_bin(data_in, 100);
+			bin_data = hex_to_bin(data_in, 96); 
 //pTinverse-->pT_actual
 			pTinverse = bin_to_int(bin_data.substr(0, 15));
-			t = bin_to_int(bin_data.substr(27, 16)); //t is actually eta
+			t = bin_to_int(bin_data.substr(27, 16)); //this is actually eta
 			z0 = bin_to_int(bin_data.substr(43, 12));
 			track_data trkd;
 			if(bin_data.substr(95, 1) == "1"){
@@ -154,15 +155,16 @@ int main(int argc, char ** argv){
 			pT = pTinverse*1.0;
 			if(pT > 511) pT = 511;
 			trkd.pT = (int)pT;
-			trkd.eta = (int)t;
 		//	tracks[ntracks].pT = (int)round(pT / pTstep);
 			//cout << data_in << " pT: " << trkd.pT << endl;
-//			if(1.0 * t < pow(2, ntbits-1)){
-	//			t += (int)pow(2, ntbits-1);
-		//	}
-			//else {
-				//t -= (int)pow(2, ntbits-1);
+			trkd.eta = t*1.0;
+			//if(1.0 * t < pow(2, ntbits-1)){
+			//	t += (int)pow(2, ntbits-1);
 			//}
+			//else {
+			//	t -= (int)pow(2, ntbits-1);
+			//}
+			
 			//tf = -maxt + t * 2.0 * maxt / (pow(2, ntbits)-1);
 			//trkd.eta = -1.0 * log(sqrt(tf*tf + 1.0) - tf);
 			if(trkd.eta > maxeta) {
@@ -171,7 +173,14 @@ int main(int argc, char ** argv){
 			else if(trkd.eta < -1.0 * maxeta) {
 				trkd.eta = -1.0 * maxeta;
 			}
-
+			
+			if(1.0 * trkd.eta < pow(2, ntbits-1)){
+				trkd.eta += (int)pow(2, ntbits-1);
+			}
+			else {
+				trkd.eta -= (int)pow(2, ntbits-1);
+			}
+			
 			if(1.0 * z0 < pow(2, nzbits-1)){
 				z0 += (int)pow(2, nzbits-1);
 			}
@@ -179,27 +188,28 @@ int main(int argc, char ** argv){
 				z0 -= (int)pow(2, nzbits-1);
 			}
 			trkd.z = -1.0*maxz + z0 * 2.0 * maxz /( pow(2, nzbits)-1);
-			trkd.phi = -1.0*maxphi + pslice * phistep + (phistep / 2);
+			trkd.phi = -1.0*maxphi + pslice * phistep + (phistep / 2);  
+			trkd.eta = -1.0*maxeta + trkd.eta*2.0*maxeta/(pow(2,ntbits)-1);
 			trkd.bincount = 0;
-			++ntracks;
+			++ntracks;                                         
 			tracks.push_back(trkd);
 			getline(in_tracks[pslice], data_in);
 		}
 		if(maxntrk < ntrks[pslice]) maxntrk = ntrks[pslice];
 	}
-
+			
 	//Call L2cluster
 	//
-	//Then print to output file all clusters from the most energetic zbin
+	//Then print to output file all clusters from the most energetic zbin 
 data_read:
 		if(ntracks == 0){ continue;}
 		cout << "****EVENT " << nreal_events << " ****" << endl;
 		nreal_events++;
 		maxzbin mzb = L2_cluster(tracks, nzbins, ntracks); //left off here
-		if(mzb.isEmpty == true) {
+		if(mzb.isEmpty == true) { 
 			continue;
 		}
-	for(int kk = 0; kk < nzbins-1; ++kk){
+	for(int kk = 0; kk < nzbins-1; ++kk){	
 	        if(kk != mzb.znum) continue;
 		vector<etaphibin> clusters = all_zbins[kk].clusters;
 		for(int k = 0; k < all_zbins[kk].nclust; ++k){
@@ -239,7 +249,7 @@ data_read:
 			//Concatenate into one binary string, convert to hex, write to output file.
 			data = bin_nt + bin_nx + bin_z + bin_eta + bin_phi + bin_pT;
 			data = bin_to_hex(data);
-			out_clusts << data << endl;
+			out_clusts << data << endl;		
 		}
          } //for each zbin
 		if(mzb.ht == 0) cout << "WARNING: HT = 0 (Event " << nevents << ")" << endl;
