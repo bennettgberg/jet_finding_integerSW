@@ -50,6 +50,7 @@ int main(int argc, char ** argv){
 //	double pTinvf;
 	double pT;
 	double tf;
+	double middle_phi;
 	double phi0f;
 	int counter;
 	string data_in;
@@ -152,6 +153,8 @@ int main(int argc, char ** argv){
 			z0 = bin_to_int(bin_data.substr(43, 12));
 			phi0 = bin_to_int(bin_data.substr(15, 12));
 			track_data trkd;
+			//cout << "bin string: " + bin_data.substr(15,12) << endl;
+			//cout << bin_to_int(bin_data.substr(15, 12)) << endl;
 			if(bin_data.substr(95, 1) == "1"){
 				trkd.xbit = true;
 			}
@@ -197,6 +200,16 @@ int main(int argc, char ** argv){
 			else {
 				z0 -= (int)pow(2, nzbits-1);
 			}
+			/*if(bin_data.substr(15, 1) == "1") {
+				phi0 = ~bin_to_int(bin_data.substr(16, 11))+1;
+				cout << bin_data.substr(15, 12)<<endl;
+				cout << phi0<<endl;
+				cout << ~phi0+1<<endl;
+			}
+			else {
+				phi0 = bin_to_int(bin_data.substr(16, 11));
+			}*/
+			
 			//cout << phi0 << endl;
 			if(1.0 * phi0 < pow(2, 12-1)){
 				phi0 += (int)pow(2, 12-1);
@@ -204,21 +217,41 @@ int main(int argc, char ** argv){
 			else {
 				phi0 -= (int)pow(2, 12-1);
 			}
+			//cout << "phi0: ";
 			//cout << phi0 << endl;
+			phi0f = phi0*(2*M_PI/(pow(2,12)-1))-M_PI/9;
+			//cout << "final phi0f: ";
+ 			//cout << phi0f << endl;
+			//phi0f = (-1.0*M_PI/9 + phi0 * 2.0 * M_PI/9 /( pow(2, 12)-1));
 			trkd.z = -1.0*maxz + z0 * 2.0 * maxz /( pow(2, nzbits)-1);
-			phi0f = (-1.0*phistep*3/2 + phi0 * 2.0 * phistep*3/2 /( pow(2, 12)-1));
+			if(pslice % 2 == 0) {
+				middle_phi = -1*M_PI + M_PI / (9) + (pslice/2) * (2*M_PI / 9);
+			}
+			else if(pslice % 2 == 1) {
+				middle_phi = -1*M_PI + M_PI / (9) + ((pslice-1)/2) * (2*M_PI / 9);
+			}
+			
+			//cout << phi0f<<endl;
+			phi0f = phi0f+middle_phi;
+			//phi0 = phi0 * phistep - M_PI/18;
+			phi0 = (int)floor((phi0f + M_PI)*(27)/(2*M_PI));
+			//cout << pslice*3/2 << endl;
+			//cout << pslice << endl;
+			//cout << middle_phi << endl;
+			//cout << phi0f<<endl;
+			//cout << phi0<<endl;
 			//cout << phi0f << endl;
 			//cout << pslice << endl;
 			
-			if(pslice % 2 == 0) {
+			/*if(pslice % 2 == 0) {
 				if(phi0f >= -1.0*M_PI/9 && phi0f < -1.0*M_PI/27) {
-					pslice_final = pslice*3/2;
+					pslice_final = pslice*3/2+2;
 				}
 				else if(phi0f >= -1.0*M_PI/27 && phi0f < M_PI/27) {
 					pslice_final = pslice*3/2 + 1;
 				}
 				else if(phi0f >= M_PI/27 && phi0f < M_PI/9) {
-					pslice_final = pslice*3/2+2;
+					pslice_final = pslice*3/2;
 				}
 				else {
 					cout << "uh oh";
@@ -226,20 +259,20 @@ int main(int argc, char ** argv){
 			}
 			else if(pslice % 2 == 1) {
 				if(phi0f >= -1.0*M_PI/9 && phi0f < -1.0*M_PI/27) {
-					pslice_final = (pslice-1)*3/2;
+					pslice_final = (pslice-1)*3/2+2;
 				}
 				else if(phi0f >= -1.0*M_PI/27 && phi0f < M_PI/27) {
 					pslice_final = (pslice-1)*3/2+1;
 				}
 				else if(phi0f >= M_PI/27 && phi0f < M_PI/9) {
-					pslice_final = (pslice-1)*3/2+2;
+					pslice_final = (pslice-1)*3/2;
 				}
 				else {
 					cout << "uh oh";
 				}
-			}
-			trkd.phi = -1.0*maxphi + pslice_final * phistep + (phistep / 2);  
-			if(pT == 9) {cout << bin_to_int(bin_data.substr(15, 12)) << endl; cout << phi0 << endl; cout << phi0f << endl; cout << pslice << endl; cout << pslice_final << endl; cout << -1.0*maxphi + pslice_final * phistep + (phistep / 2);}
+			}*/
+			pslice_final = phi0;
+			trkd.phi = -1.0*maxphi + pslice_final* phistep + (phistep / 2); 
 			trkd.bincount = 0;
 			++ntracks;                                       
 			tracks.push_back(trkd);
