@@ -12,6 +12,12 @@
 
 //Holds data from tracks, converted from their integer versions.
 int nzbins = 6;
+const int nphibits = 12;
+const float phi_bin_width = (2*M_PI)/27;
+float int_to_float(int int_num){
+	float floatval = (int_num/(pow(2,nphibits-1)-1))*M_PI;
+	return floatval;
+}
 int main(int argc, char ** argv){
 	nzbins = 6;
 	int eventstart = 0;            
@@ -46,10 +52,12 @@ int main(int argc, char ** argv){
 	int pTinverse; //as of now, it is actually just pT
 	int t; //really just eta now
 	int z0;
+	//int phi0;
      //float values of these
 //	double pTinvf;
 	double pT;
-	double etaf;
+	double eta_float;
+	//double phi_float;
 //	double tf;
 	int counter;
 	string data_in;
@@ -57,7 +65,7 @@ int main(int argc, char ** argv){
 	string filename;
 //#  This version should be consistent with the interface specified in the technical proposal:
 //#	15 bits of pT* (note: NOT 1/pT)
-//#	12 bits of phi0
+//#	12 bits of phi0 (note: phi0 is relative to center of phi sector)
 //#	13 bits of d0
 //#	12 bits of z0*
 //#	16 bits of t* (note: actually just eta)
@@ -89,6 +97,7 @@ int main(int argc, char ** argv){
 	int etaint;
 	int pTint;
 	int phi;
+	//int pslicefinal;
 	string data;
 	string bin_z;
 	string bin_eta;
@@ -135,6 +144,7 @@ int main(int argc, char ** argv){
 			pTinverse = bin_to_int(bin_data.substr(0, 15));
 			t = bin_to_int(bin_data.substr(27, 16)); //this is actually eta
 			z0 = bin_to_int(bin_data.substr(43, 12));
+			//phi0 = bin_to_int(bin_data.substr(15,12));
 			track_data trkd;
 			if(bin_data.substr(95, 1) == "1"){
 				trkd.xbit = true;
@@ -174,8 +184,8 @@ int main(int argc, char ** argv){
 			else {
 				t -= (int)pow(2, ntbits-1);
 			}
-			etaf = -maxeta + t * 2.0 * maxeta / (pow(2, ntbits)-1);
-			trkd.eta = etaf; 
+			eta_float = -maxeta + t * 2.0 * maxeta / (pow(2, ntbits)-1);
+			trkd.eta = eta_float; 
 			if(trkd.eta > maxeta) {
 				trkd.eta = maxeta;
 			}
@@ -189,7 +199,19 @@ int main(int argc, char ** argv){
 			else {
 				z0 -= (int)pow(2, nzbits-1);
 			}
+			//phi_float = int_to_float(phi0);
+			//if (pslice % 3 == 0){
+			//	pslicefinal = (int)(pslice/3);
+			//}
+			//else if (pslice % 3 == 1){
+			//	pslicefinal = (int)((pslice-1)/3); 
+			//}
+			//else {
+			//	pslicefinal = (int)((pslice-2)/3);
+			//}
 			trkd.z = -1.0*maxz + z0 * 2.0 * maxz /( pow(2, nzbits)-1);
+			
+			//trkd.phi = -1.0*maxphi + pslicefinal*3*phistep + ((3*phistep)/2) + phi_float; 
 			trkd.phi = -1.0*maxphi + pslice * phistep + (phistep / 2);  
 			trkd.bincount = 0;
 			++ntracks;                                         
