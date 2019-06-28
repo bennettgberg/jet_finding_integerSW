@@ -160,7 +160,7 @@ eta_bins = 24
 #change these to only do a certain range of events.
 startnum= 1
 endnum = 999999
-maxnlines = 255
+maxnlines = 2000 #255
 line = infile.readline()
 words = line.split()
 count = 0
@@ -238,6 +238,7 @@ while len(words) > 1 and totnlines < maxnlines:
 		for k in range(ntrks[j], maxntrk+1):
 			slices[j].write("0x000000000000000000000000\n")
 	totnlines += maxntrk + 1
+#print("event start: " + str(eventstart) + " eventend: " + str(eventend) + " words: " + str(words))
 print("nevent: " + str(nevent) + " tracksused: " + str(tracksused))		
 totlines = nevent + ntrack
 print("writing ending 0s")
