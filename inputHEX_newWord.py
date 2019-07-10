@@ -27,7 +27,7 @@ nphibits = 12
 ptstep = 2*maxpT / (2**nptbits-1)
 etastep = 2.4*2 / (2**netabits-1) 
 zstep = 15.0 * 2 / (2 ** nzbits-1)
-phistep = 2*math.pi / (2**nphibits - 1)
+phistep = 2*(math.pi/9) / (2**nphibits - 1)
 #phistep = 2*math.pi / (2 ** 16 - 1)
 nphibins = 9 #27
 
@@ -85,15 +85,15 @@ def writeData (pT, eta, z, phi, outfile):
 #phi that is input to this function should be the angle from the middle of the sector!
 
    phival = int(round((phi + math.pi/9.0) / phistep))
-   print("first phival:");
-   print(phival);
+   #print("first phival:");
+   #print(phival);
    if phival < 2**(nphibits-1):
       phival += 2**(nphibits-1)
    else:
       phival -= 2**(nphibits-1)
-   print("phi value:");
-   print(phi);
-   print(phival);
+   #print("phi value:");
+   #print(phi);
+   #print(phival);
    zval = int(round((z + 15.0) / zstep))
    if zval < 2**(nzbits-1):
       zval += 2**(nzbits-1)

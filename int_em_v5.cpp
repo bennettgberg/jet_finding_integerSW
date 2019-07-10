@@ -184,6 +184,7 @@ int main(int argc, char ** argv){
 				eta -= (int)pow(2, netabits-1);
 			}
 			etaf = -maxeta + eta * 2.0 * maxeta / (pow(2, netabits)-1);
+			//cout << etaf << endl;
 			trkd.eta = etaf; //-1.0 * log(sqrt(tf*tf + 1.0) - tf);
 			if(trkd.eta > maxeta) {
 				trkd.eta = maxeta;
@@ -202,15 +203,18 @@ int main(int argc, char ** argv){
 			}
 
 			trkd.z = -1.0*maxz + z0 * 2.0 * maxz /( pow(2, nzbits)-1);
-
+			//cout << "pT ";
+			//cout << (int)pT; 
+			//cout << " phi0: ";
+			//cout << phi0 << endl;
 			if(1.0 * phi0 < pow(2, 12-1)){
 				phi0 += (int)pow(2, 12-1);
 			}
 			else {
 				phi0 -= (int)pow(2, 12-1);
 			}
-
-			phi0f = phi0*(2*M_PI/(pow(2,12)-1))-M_PI/9;
+			//cout << -1.0*phi0/9.0 + phi0 * 2.0 * phi0/9.0 /( pow(2, 12)-1) << endl;
+			phi0f = phi0*(2*(M_PI/9.0)/(pow(2,12)-1))-M_PI/9;
 
 			if(pslice % 2 == 0) {
 				middle_phi = -1*M_PI + M_PI / (9) + (pslice/2) * (2*M_PI / 9);
