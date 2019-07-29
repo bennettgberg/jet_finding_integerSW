@@ -1,12 +1,12 @@
 
 import math
 #This script will convert a coe file (in binary format) to a usable hexadecimal file for input to C++ emulation.
-nfibers = 12 #how many fibers have data in the coe file
-nphi = 27 #how many total phi sectors there are (zero out unused ones)
-wordlength = 100
-tpe = 24  #tracks per event (for each fiber)
-nevents = 161 #how many events to make inputs for
-coe = open("vcu118_input_patterns.coe", "r")
+nfibers = 18 #how many fibers have data in the coe file
+nphi = 18 #how many total phi sectors there are (zero out unused ones)
+wordlength = 96
+tpe = 110  #tracks per event (for each fiber)
+nevents = 64 #how many events to make inputs for
+coe = open("trackerRegion_alltracks_sectors_2x9_TTbar_PU200.coe", "r")
 #read info lines at top of file
 for i in range(10):
 	coe.readline()
@@ -18,6 +18,7 @@ for event in range(nevents):
 			if phi < nfibers:
 				data = ""
 				for i in range(phi*wordlength, (phi+1)*wordlength, 4):
+					#print event;
 					hexnum = hex(int(all_tracks[i:i+4], 2))
 					#print "hexnum: " + str(hexnum)
 					data = data + str(hexnum)[2]
@@ -25,7 +26,11 @@ for event in range(nevents):
 				zlist = ['0' for i in range(wordlength)]
 				#print str(zlist)
 				data = "".join(zlist)
-			fname = "phi" + str(phi) + ".dat"
+			if phi<9:
+				fname = "phi" + str(phi) + "_n.dat"
+			else:
+				fname = "phi" + str(phi-9) + "_p.dat"		
+			
 			if event == 0 and track == 0:
 				let = 'w'
 			else:
@@ -35,7 +40,10 @@ for event in range(nevents):
 			phifile.close()
 	#now write 0s to signify end of event.
 	for phi in range(nphi):
-		fname = "phi" + str(phi) + ".dat"
+		if phi<9:
+			fname = "phi" + str(phi) + "_n.dat"
+		else:
+			fname = "phi" + str(phi-9) + "_p.dat"		
 		phifile = open(fname, 'a')
 		phifile.write("0x" + "".join(['0' for i in range(int(math.ceil(wordlength/4)))]) + "\n")
 
