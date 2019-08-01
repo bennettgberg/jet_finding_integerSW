@@ -15,7 +15,7 @@ int nzbins = 6;
 int main(int argc, char ** argv){
 	nzbins = 6;
 	int eventstart = 0;            
-	int eventend = 999999;         
+	int eventend = 1; //999999;         
 	if(argc == 2){
 		nzbins = atoi(argv[1]);                                                 
 	}
@@ -149,14 +149,18 @@ int main(int argc, char ** argv){
 			ntrks[pslice]++;
 			bin_data = hex_to_bin(data_in, 96); 
 //pTinverse-->pT_actual
-			pTinverse = bin_to_int(bin_data.substr(0, 15));
-			eta = bin_to_int(bin_data.substr(27, 16));
-			z0 = bin_to_int(bin_data.substr(43, 12));
-			phi0 = bin_to_int(bin_data.substr(15, 12));
+			pTinverse = bin_to_int(bin_data.substr(81, 15));
+			eta = bin_to_int(bin_data.substr(53, 16));
+			z0 = bin_to_int(bin_data.substr(41, 12));
+			phi0 = bin_to_int(bin_data.substr(69, 12));
 			track_data trkd;
+			/*if(pslice == 15) {
+				cout << bin_data.substr(0, 96) << endl;
+				cout << bin_to_int(bin_data.substr(0, 15)) << endl;
+			}*/
 			//cout << "bin string: " + bin_data.substr(15,12) << endl;
 			//cout << bin_to_int(bin_data.substr(15, 12)) << endl;
-			if(bin_data.substr(95, 1) == "1"){
+			if(bin_data.substr(0, 1) == "1"){
 				trkd.xbit = true;
 			}
 			else {
