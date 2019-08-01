@@ -15,7 +15,13 @@ vector<etaphibin> L1_cluster(etaphibin phislice[netabins]){
 		for(int etabin = 0; etabin < netabins; ++etabin){
 			//assign values for my pT and neighbors' pT
 			if(phislice[etabin].used) continue;
-			my_pt = phislice[etabin].pTtot;
+			if(phislice[etabin].pTtot > 511) {
+				my_pt = 511;
+			}
+			else {
+				my_pt = phislice[etabin].pTtot;
+			}
+			//cout << my_pt << endl;
 			if(etabin > 0 && !phislice[etabin-1].used) {
 				left_pt = phislice[etabin-1].pTtot;
 			} 
@@ -54,12 +60,29 @@ vector<etaphibin> L1_cluster(etaphibin phislice[netabins]){
 			clusters[nclust] = phislice[etabin];
 			phislice[etabin].used = true;
 			if(left_pt > 0) {
-				clusters[nclust].pTtot += left_pt;
+				if((clusters[nclust].pTtot + left_pt) > 511) {
+					clusters[nclust].pTtot = 511;
+				}
+				else {
+					clusters[nclust].pTtot += left_pt;
+					//cout << clusters[nclust].pTtot << endl;
+					//cout << etabin << endl;
+				}
+				
 				clusters[nclust].numtracks += phislice[etabin-1].numtracks;
 				clusters[nclust].nx_tracks += phislice[etabin-1].nx_tracks;
 			}
 			if(my_pt >= right2pt && right_pt > 0) {
-				clusters[nclust].pTtot += right_pt;
+				if((clusters[nclust].pTtot + right_pt) > 511) {
+					clusters[nclust].pTtot = 511;
+
+				}
+				else {
+					clusters[nclust].pTtot += right_pt;
+					//cout << clusters[nclust].pTtot << endl;
+					//cout << etabin << endl;
+				}
+				//cout << clusters[nclust].pTtot << endl;
 				clusters[nclust].numtracks += phislice[etabin+1].numtracks;
 				clusters[nclust].nx_tracks += phislice[etabin+1].nx_tracks;
 				phislice[etabin+1].used = true;
@@ -74,7 +97,13 @@ vector<etaphibin> L1_cluster(etaphibin phislice[netabins]){
 				if(clusters[m+1].pTtot > clusters[m].pTtot){
 					clusters[m].eta = clusters[m+1].eta;
 				}
-				clusters[m].pTtot += clusters[m+1].pTtot;
+				if((clusters[m].pTtot + clusters[m+1].pTtot) > 511) {
+					clusters[m].pTtot = 511;
+				}
+				else {
+					clusters[m].pTtot += clusters[m+1].pTtot;
+				}
+				//cout << clusters[m].pTtot << endl;
 				clusters[m].numtracks += clusters[m+1].numtracks;
 				clusters[m].nx_tracks += clusters[m+1].nx_tracks;
 				for(int m1 = m+1; m1 < nclust-1; ++m1){

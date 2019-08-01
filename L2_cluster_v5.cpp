@@ -60,7 +60,12 @@ maxzbin L2_cluster(vector<track_data> tracks, int nzbins, int ntracks){
 					    epbins[i][j].phi + phistep / 2 >= tracks[k].phi && 
 					    tracks[k].pT > 0 && tracks[k].bincount != 2)){
 						++tracks[k].bincount;
-						epbins[i][j].pTtot += tracks[k].pT;
+						if((epbins[i][j].pTtot + tracks[k].pT) > 511) {
+							epbins[i][j].pTtot = 511;
+						}
+						else {
+							epbins[i][j].pTtot += tracks[k].pT;
+						}
 						++epbins[i][j].numtracks;
 						if(tracks[k].xbit) {
 							++epbins[i][j].nx_tracks;
