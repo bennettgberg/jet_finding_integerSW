@@ -17,7 +17,7 @@ using namespace std;
 
 int main(int argc, char ** argv){
 	ifstream simfile;
-	simfile.open("sim_outL2.txt");
+	simfile.open("sim_outL2_2.txt");
 //gracefully catch file-not-found error
 	if(simfile.fail()) {
                 cout << "Error: Could not open sim_outL2.txt." << endl;

@@ -149,7 +149,7 @@ int main(int argc, char ** argv){
 			ntrks[pslice]++;
 			bin_data = hex_to_bin(data_in, 96); 
 //pTinverse-->pT_actual
-			pTinverse = bin_to_int(bin_data.substr(81, 15));
+			pTinverse = bin_to_int(bin_data.substr(82, 14));
 			eta = bin_to_int(bin_data.substr(53, 16));
 			z0 = bin_to_int(bin_data.substr(41, 12));
 			phi0 = bin_to_int(bin_data.substr(69, 12));
