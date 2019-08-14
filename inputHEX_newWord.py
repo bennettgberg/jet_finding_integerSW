@@ -160,7 +160,7 @@ eta_bins = 24
 #change these to only do a certain range of events.
 startnum= 1
 endnum = 999999
-maxnlines = 2000 #255
+maxnlines = 4000 #255
 line = infile.readline()
 words = line.split()
 count = 0
