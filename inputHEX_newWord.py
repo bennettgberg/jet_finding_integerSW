@@ -27,7 +27,7 @@ nphibits = 12
 ptstep = 2*maxpT / (2**nptbits-1)
 etastep = 2.4*2 / (2**netabits-1) 
 zstep = 15.0 * 2 / (2 ** nzbits-1)
-phistep = 2*math.pi / (2**nphibits - 1)
+phistep = 2*(math.pi/9) / (2**nphibits - 1)
 #phistep = 2*math.pi / (2 ** 16 - 1)
 nphibins = 9 #27
 
@@ -83,11 +83,17 @@ def writeData (pT, eta, z, phi, outfile):
    else:
       etaval -= 2**(netabits-1)
 #phi that is input to this function should be the angle from the middle of the sector!
-   phival = int(round((phi + math.pi/18.0) / phistep))
+
+   phival = int(round((phi + math.pi/9.0) / phistep))
+   #print("first phival:");
+   #print(phival);
    if phival < 2**(nphibits-1):
       phival += 2**(nphibits-1)
    else:
       phival -= 2**(nphibits-1)
+   #print("phi value:");
+   #print(phi);
+   #print(phival);
    zval = int(round((z + 15.0) / zstep))
    if zval < 2**(nzbits-1):
       zval += 2**(nzbits-1)
@@ -154,7 +160,7 @@ eta_bins = 24
 #change these to only do a certain range of events.
 startnum= 1
 endnum = 999999
-maxnlines = 255
+maxnlines = 2000 #255
 line = infile.readline()
 words = line.split()
 count = 0
@@ -212,10 +218,10 @@ while len(words) > 1 and totnlines < maxnlines:
 		if etaf < 0:
 			file_index += 1
 	#phi value at the middle of this sector
-		middle_phi = -1*math.pi + math.pi / (nphibins * 2) + phi_in * (math.pi / nphibins)
+		middle_phi = -1*math.pi + math.pi / (nphibins) + phi_in * (2*math.pi / nphibins)
 	#only accept the track if it's in the correct range for pT, eta, and z.
 		if (abs(pTf)>=2) and (abs(etaf)<=2.4) and (abs(zf)<=15):
-			print "phif: " + str(phif) + " phi_in: " + str(phi_in)
+			print "phif: " + str(phif) + " phi_in: " + str(phi_in) + " middle_phi: " + str(middle_phi);
 			tracksused = tracksused + 1
 	#phi is measured from the center of the sector.
 			phi_from_ctr = phif - middle_phi
@@ -232,6 +238,7 @@ while len(words) > 1 and totnlines < maxnlines:
 		for k in range(ntrks[j], maxntrk+1):
 			slices[j].write("0x000000000000000000000000\n")
 	totnlines += maxntrk + 1
+#print("event start: " + str(eventstart) + " eventend: " + str(eventend) + " words: " + str(words))
 print("nevent: " + str(nevent) + " tracksused: " + str(tracksused))		
 totlines = nevent + ntrack
 print("writing ending 0s")
