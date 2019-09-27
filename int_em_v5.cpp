@@ -11,9 +11,9 @@
  */
 
 //Holds data from tracks, converted from their integer versions.
-int nzbins = 6;
+int nzbins = 4;
 int main(int argc, char ** argv){
-	nzbins = 6;
+	nzbins = 4;
 	int eventstart = 0;            
 	int eventend = 1; //999999;         
 	if(argc == 2){
